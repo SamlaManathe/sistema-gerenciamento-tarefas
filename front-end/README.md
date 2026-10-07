@@ -1,59 +1,98 @@
-# FrontEnd
+## Front-end
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.23.
+### Models
 
-## Development server
-
-To start a local development server, run:
-
-```bash
-ng serve
+```text
+models
+├── usuario.ts
+└── tarefa.ts
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Representam os dados recebidos e enviados para a API.
 
-## Code scaffolding
+Exemplo:
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
+```ts
+export interface Usuario {
+  id?: number;
+  nome: string;
+  email: string;
+  senha: string;
+}
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+---
 
-```bash
-ng generate --help
+### Services
+
+```text
+services
+├── usuario.service.ts
+└── tarefa.service.ts
 ```
 
-## Building
+Responsáveis por consumir a API.
 
-To build the project run:
+Utilizam HttpClient.
 
-```bash
-ng build
+Exemplos:
+
+```ts
+GET /api/tarefas
+POST /api/tarefas
+PUT /api/tarefas
+DELETE /api/tarefas
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Os componentes Angular não devem fazer requisições diretamente.
 
-## Running unit tests
+Fluxo:
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
+```text
+Componente → Service → API
 ```
 
-## Running end-to-end tests
+---
 
-For end-to-end (e2e) testing, run:
+### Environments
 
-```bash
-ng e2e
+```text
+environments
+└── environment.ts
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+Centraliza configurações da aplicação.
 
-## Additional Resources
+Exemplo:
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+```ts
+export const environment = {
+  apiUrl: 'http://localhost:5100/api'
+};
+```
+
+Caso a URL da API mude, basta alterar este arquivo.
+
+---
+
+## Arquitetura Geral
+
+```text
+Angular
+    ↓
+Components
+    ↓
+Services (Angular)
+    ↓
+Controllers
+    ↓
+Services (.NET)
+    ↓
+Repositories
+    ↓
+Entity Framework
+    ↓
+SQLite
+```
+
+Cada camada possui apenas uma responsabilidade, facilitando manutenção, testes e evolução do projeto.
