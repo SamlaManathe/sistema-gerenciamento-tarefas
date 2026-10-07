@@ -1,0 +1,32 @@
+# Build
+bin/
+obj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Rider
+.idea/
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+
+# Entity Framework Local Database
+*.db
+*.db-shm
+*.db-wal
+
+# Publish
+publish/
+
+# User secrets
+secrets.json
+
+# OS
+.DS_Store
+Thumbs.db
