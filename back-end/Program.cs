@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using back_end.Data;
+using back_end.Repositories;
+using back_end.Repositories.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +18,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(
             )
         )
 );
+// - Ana : Injeção de Dependências dos Repositorios
+builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+builder.Services.AddScoped<ITarefaRepository, TarefaRepository>();
+
+var app = builder.Build();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(
@@ -30,7 +37,8 @@ builder.Services.AddCors(options =>
     );
 });
 
-var app = builder.Build();
+// aqui tava dando erro e eu comentei, acho que duplicou o seu codigo samla
+// var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

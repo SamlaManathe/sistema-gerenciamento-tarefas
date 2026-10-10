@@ -1,5 +1,18 @@
-namespace back_end.Repositories.Interfaces;
+using System.Threading.Tasks;
+using back_end.Models;
 
-public interface IUsuarioRepository
+namespace back_end.Repositories.Interfaces
 {
+    public interface IUsuarioRepository
+    {
+        //Retorna A Usuaria criada
+        Task<Usuario> AdicionarAsync(Usuario usuario);
+
+        Task<Usuario?> ObterPorEmailAsync(string email);
+
+        Task<Usuario?> ObterPorIdAsync(int id);
+
+    }
+    
 }
+
