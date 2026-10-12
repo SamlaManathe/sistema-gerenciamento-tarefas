@@ -1,1 +1,105 @@
-<p>lista-tarefas works!</p>
+
+<div class="container">
+  <h1>Minhas tarefas</h1>
+
+  <p class="sucesso" *ngIf="mensagem">{{ mensagem }}</p>
+  <p class="erro" *ngIf="erro">{{ erro }}</p>
+
+  <form (ngSubmit)="salvar()">
+    <h2>{{ editandoId !== null ? 'Editar tarefa' : 'Nova tarefa' }}</h2>
+
+    <label for="titulo">Título</label>
+    <input
+      id="titulo"
+      name="titulo"
+      [(ngModel)]="formulario.titulo"
+      required
+      placeholder="Digite o título"
+    />
+
+    <label for="descricao">Descrição</label>
+    <textarea
+      id="descricao"
+      name="descricao"
+      [(ngModel)]="formulario.descricao"
+      placeholder="Descreva a tarefa"
+    ></textarea>
+
+    <label for="dataVencimento">Data de vencimento</label>
+    <input
+      id="dataVencimento"
+      name="dataVencimento"
+      type="datetime-local"
+      [(ngModel)]="formulario.dataVencimento"
+      required
+    />
+
+    <div class="botoes">
+      <button type="submit">
+        {{ editandoId !== null ? 'Salvar alterações' : 'Criar tarefa' }}
+      </button>
+
+      <button
+        type="button"
+        *ngIf="editandoId !== null"
+        class="secundario"
+        (click)="cancelarEdicao()"
+      >
+        Cancelar
+      </button>
+    </div>
+  </form>
+
+  <h2>Lista de tarefas</h2>
+
+  <p *ngIf="carregando">Carregando tarefas...</p>
+
+  <p *ngIf="!carregando && tarefas.length === 0">
+    Nenhuma tarefa encontrada.
+  </p>
+
+  <article class="tarefa" *ngFor="let tarefa of tarefas">
+    <div>
+      <h3 [class.concluida]="tarefa.concluida">
+        {{ tarefa.titulo }}
+      </h3>
+
+      <p>{{ tarefa.descricao }}</p>
+
+      <p>
+        Vencimento:
+        {{ tarefa.dataVencimento | date:'dd/MM/yyyy HH:mm' }}
+      </p>
+
+      <span [class.status-concluido]="tarefa.concluida">
+        {{ tarefa.concluida ? 'Concluída' : 'Pendente' }}
+      </span>
+    </div>
+
+    <div class="botoes">
+      <button
+        type="button"
+        *ngIf="!tarefa.concluida"
+        (click)="marcarConcluida(tarefa)"
+      >
+        Concluir
+      </button>
+
+      <button
+        type="button"
+        class="secundario"
+        (click)="editar(tarefa)"
+      >
+        Editar
+      </button>
+
+      <button
+        type="button"
+        class="perigo"
+        (click)="excluir(tarefa)"
+      >
+        Excluir
+      </button>
+    </div>
+  </article>
+</div>
