@@ -1,5 +1,17 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace back_end.DTOs;
 
 public class CriarUsuarioDTO
 {
+    [Required(ErrorMessage = "O nome é obrigatório.")]
+    public string Nome { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "O e-mail é obrigatório.")]
+    [EmailAddress(ErrorMessage = "O formato do e-mail é inválido.")]
+    public string Email { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "A senha é obrigatória.")]
+    [MinLength(6, ErrorMessage = "A senha deve ter pelo menos 6 caracteres.")]
+    public string Senha { get; set; } = string.Empty;
 }
