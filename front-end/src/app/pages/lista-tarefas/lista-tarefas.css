@@ -1,0 +1,93 @@
+.container {
+  max-width: 850px;
+  margin: 30px auto;
+  padding: 24px;
+  font-family: Arial, sans-serif;
+}
+
+h1, h2 {
+  color: #263449;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+  margin-bottom: 30px;
+  background: #f5f7fa;
+  border-radius: 10px;
+}
+
+input, textarea {
+  padding: 10px;
+  border: 1px solid #cbd2dc;
+  border-radius: 5px;
+  font: inherit;
+}
+
+textarea {
+  min-height: 75px;
+  resize: vertical;
+}
+
+button {
+  padding: 10px 14px;
+  border: none;
+  border-radius: 5px;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.88;
+}
+
+.botoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.secundario {
+  background: #64748b;
+}
+
+.perigo {
+  background: #dc2626;
+}
+
+.tarefa {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 18px;
+  margin-bottom: 14px;
+  border: 1px solid #dce2ea;
+  border-radius: 8px;
+}
+
+.tarefa h3 {
+  margin-top: 0;
+}
+
+.concluida {
+  text-decoration: line-through;
+  color: #64748b;
+}
+
+.status-concluido {
+  color: #15803d;
+  font-weight: bold;
+}
+
+.sucesso {
+  color: #15803d;
+}
+
+.erro {
+  color: #dc2626;
+}

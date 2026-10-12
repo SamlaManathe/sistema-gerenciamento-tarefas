@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using back_end.Data;
 using back_end.Repositories;
 using back_end.Repositories.Interfaces;
+using back_end.Services;
+using back_end.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +12,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddControllers();
+builder.Services.AddScoped<ITarefaService, TarefaService>();
+builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddDbContext<ApplicationDbContext>(
     options =>
         options.UseSqlite(
@@ -22,7 +27,6 @@ builder.Services.AddDbContext<ApplicationDbContext>(
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<ITarefaRepository, TarefaRepository>();
 
-var app = builder.Build();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(
@@ -37,6 +41,8 @@ builder.Services.AddCors(options =>
     );
 });
 
+var app = builder.Build();
+
 // aqui tava dando erro e eu comentei, acho que duplicou o seu codigo samla
 // var app = builder.Build();
 
@@ -50,6 +56,5 @@ app.UseSwagger();
 app.UseSwaggerUI();
 app.UseHttpsRedirection();
 app.UseCors("AngularPolicy");
-
+app.MapControllers();
 app.Run();
-
