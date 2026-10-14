@@ -20,7 +20,7 @@ public class UsuarioController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Cadastrar([FromBody] CriarUsuarioDTO dto)
     {
-        if (!ModelState.IsValid) 
+        if (!ModelState.IsValid)
             return BadRequest(new ApiResponse<object>(false, "Dados inválidos.", ModelState));
 
         var usuario = new Usuario
@@ -33,8 +33,17 @@ public class UsuarioController : ControllerBase
         try
         {
             var usuarioCriado = await _usuarioService.CadastrarAsync(usuario);
-            return Created($"/api/Usuario/{usuarioCriado.Id}", 
-                new ApiResponse<Usuario>(true, "Usuário cadastrado com sucesso.", usuarioCriado));
+            return Created(
+                $"/api/Usuario/{usuarioCriado.Id}",
+                new ApiResponse<object>(
+                    true,
+                    "Usuário cadastrado com sucesso.",
+                    new
+                    {
+                        usuarioCriado.Id,
+                        usuarioCriado.Nome,
+                        usuarioCriado.Email
+                    }));
         }
         catch (ArgumentException ex)
         {
@@ -44,5 +53,27 @@ public class UsuarioController : ControllerBase
         {
             return BadRequest(new ApiResponse<object>(false, ex.Message));
         }
+    }
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginUsuarioDTO dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(new ApiResponse<object>(false, "Dados inválidos.", ModelState));
+
+        var usuario = await _usuarioService.AutenticarAsync(dto.Email, dto.Senha);
+
+        if (usuario is null)
+            return Unauthorized(new ApiResponse<object>(false, "E-mail ou senha inválidos."));
+
+        return Ok(new ApiResponse<object>(
+            true,
+            "Login realizado com sucesso.",
+            new
+            {
+                usuario.Id,
+                usuario.Nome,
+                usuario.Email
+            }));
     }
 }

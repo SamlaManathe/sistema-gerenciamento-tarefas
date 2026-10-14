@@ -1,0 +1,25 @@
+.auth-container {
+  max-width: 440px;
+  margin: 48px auto;
+  padding: 16px;
+}
+.auth-card {
+  padding: 28px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background: #fff;
+}
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+input {
+  padding: 10px;
+  margin-bottom: 8px;
+}
+button {
+  padding: 11px;
+  cursor: pointer;
+}
+.erro { color: #b42318; }

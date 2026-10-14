@@ -1,8 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 import { TarefaService } from '../../services/tarefa.service';
 import { Tarefa } from '../../models/tarefa';
+import { UsuarioLogado } from '../../models/usuario';
+import { ApiResponse } from '../../models/api-response';
 
 @Component({
   selector: 'app-lista-tarefas',
@@ -13,19 +17,39 @@ import { Tarefa } from '../../models/tarefa';
 })
 export class ListaTarefas implements OnInit {
   tarefas: Tarefa[] = [];
-  usuarioId = 1;
-
+  usuarioId = 0;
+  nomeUsuario = '';
   mensagem = '';
   erro = '';
   carregando = false;
   editandoId: number | null = null;
-
   formulario: Tarefa = this.novaTarefa();
 
-  constructor(private tarefaService: TarefaService) {}
+  constructor(
+    private tarefaService: TarefaService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
-    this.carregarTarefas();
+    const usuarioSalvo = localStorage.getItem('usuarioLogado');
+    if (!usuarioSalvo) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    try {
+      const usuario = JSON.parse(usuarioSalvo) as UsuarioLogado;
+      if (!Number.isInteger(usuario.id) || usuario.id <= 0) {
+        throw new Error('ID de usuária inválido.');
+      }
+      this.usuarioId = usuario.id;
+      this.nomeUsuario = usuario.nome;
+      this.formulario = this.novaTarefa();
+      this.carregarTarefas();
+    } catch {
+      localStorage.removeItem('usuarioLogado');
+      this.router.navigate(['/login']);
+    }
   }
 
   novaTarefa(): Tarefa {
@@ -34,23 +58,23 @@ export class ListaTarefas implements OnInit {
       descricao: '',
       dataVencimento: '',
       concluida: false,
-      usuarioId: 1
+      usuarioId: this.usuarioId
     };
   }
 
   carregarTarefas(): void {
+    if (this.usuarioId <= 0) return;
     this.carregando = true;
     this.erro = '';
 
     this.tarefaService.listarPorUsuario(this.usuarioId).subscribe({
-      next: (resposta) => {
-        this.tarefas = resposta.data ?? resposta;
+      next: (resposta: ApiResponse<Tarefa[]>) => {
+        this.tarefas = Array.isArray(resposta.dados) ? resposta.dados : [];
         this.carregando = false;
       },
-      error: (erro) => {
-        this.erro =
-          erro.error?.message ??
-          'Não foi possível carregar as tarefas. Verifique se a API está funcionando e se a usuária existe.';
+      error: (erro: HttpErrorResponse) => {
+        this.erro = erro.error?.mensagem ??
+          'Não foi possível carregar as tarefas. Verifique se a API está funcionando.';
         this.carregando = false;
       }
     });
@@ -60,62 +84,68 @@ export class ListaTarefas implements OnInit {
     this.mensagem = '';
     this.erro = '';
 
+    if (this.usuarioId <= 0) {
+      this.router.navigate(['/login']);
+      return;
+    }
     if (!this.formulario.titulo.trim()) {
       this.erro = 'Informe o título da tarefa.';
       return;
     }
-
     if (!this.formulario.dataVencimento) {
       this.erro = 'Informe a data de vencimento.';
       return;
     }
 
+    const data = new Date(this.formulario.dataVencimento);
+    if (Number.isNaN(data.getTime())) {
+      this.erro = 'Informe uma data de vencimento válida.';
+      return;
+    }
+
     const tarefa: Tarefa = {
-      ...this.formulario,
       titulo: this.formulario.titulo.trim(),
-      usuarioId: this.usuarioId,
-      dataVencimento: this.formulario.dataVencimento
+      descricao: this.formulario.descricao?.trim() ?? '',
+      dataVencimento: data.toISOString(),
+      concluida: this.formulario.concluida ?? false,
+      usuarioId: this.usuarioId
     };
 
-    const requisicao = this.editandoId !== null
-      ? this.tarefaService.atualizar(
-          this.editandoId,
-          this.usuarioId,
-          tarefa
-        )
+    const idEmEdicao = this.editandoId;
+    const requisicao = idEmEdicao !== null
+      ? this.tarefaService.atualizar(idEmEdicao, this.usuarioId, tarefa)
       : this.tarefaService.criar(tarefa);
 
     requisicao.subscribe({
       next: (resposta) => {
-        this.mensagem =
-          resposta.message ??
-          (this.editandoId !== null
-            ? 'Tarefa atualizada com sucesso!'
-            : 'Tarefa criada com sucesso!');
-
+        this.mensagem = resposta.mensagem ??
+          (idEmEdicao !== null ? 'Tarefa atualizada com sucesso!' : 'Tarefa criada com sucesso!');
         this.cancelarEdicao();
         this.carregarTarefas();
       },
-      error: (erro) => {
-        this.erro =
-          erro.error?.message ??
-          'Não foi possível salvar a tarefa.';
+      error: (erro: HttpErrorResponse) => {
+        this.erro = erro.error?.mensagem ??
+          'Não foi possível salvar a tarefa. Confira os dados enviados à API.';
       }
     });
   }
 
   editar(tarefa: Tarefa): void {
-    this.editandoId = tarefa.id!;
-
+    if (!tarefa.id) return;
+    this.editandoId = tarefa.id;
     this.formulario = {
       ...tarefa,
-      dataVencimento: tarefa.dataVencimento
-        ? tarefa.dataVencimento.substring(0, 16)
-        : ''
+      dataVencimento: tarefa.dataVencimento ? this.paraDataLocal(tarefa.dataVencimento) : ''
     };
-
     this.mensagem = '';
     this.erro = '';
+  }
+
+  private paraDataLocal(valor: string): string {
+    const data = new Date(valor);
+    if (Number.isNaN(data.getTime())) return '';
+    const ajustarFuso = data.getTimezoneOffset() * 60000;
+    return new Date(data.getTime() - ajustarFuso).toISOString().slice(0, 16);
   }
 
   cancelarEdicao(): void {
@@ -125,43 +155,38 @@ export class ListaTarefas implements OnInit {
 
   marcarConcluida(tarefa: Tarefa): void {
     if (!tarefa.id) return;
-
     this.erro = '';
     this.mensagem = '';
-
     this.tarefaService.concluir(tarefa.id, this.usuarioId).subscribe({
       next: (resposta) => {
-        this.mensagem = resposta.message ?? 'Tarefa concluída!';
+        this.mensagem = resposta.mensagem ?? 'Tarefa concluída!';
         this.carregarTarefas();
       },
-      error: (erro) => {
-        this.erro =
-          erro.error?.message ??
-          'Não foi possível concluir a tarefa.';
+      error: (erro: HttpErrorResponse) => {
+        this.erro = erro.error?.mensagem ?? 'Não foi possível concluir a tarefa.';
       }
     });
   }
 
   excluir(tarefa: Tarefa): void {
     if (!tarefa.id) return;
-
-    if (!confirm(`Deseja excluir a tarefa "${tarefa.titulo}"?`)) {
-      return;
-    }
+    if (!confirm(`Deseja excluir a tarefa "${tarefa.titulo}"?`)) return;
 
     this.erro = '';
     this.mensagem = '';
-
     this.tarefaService.excluir(tarefa.id, this.usuarioId).subscribe({
       next: (resposta) => {
-        this.mensagem = resposta.message ?? 'Tarefa excluída!';
+        this.mensagem = resposta.mensagem ?? 'Tarefa excluída!';
         this.carregarTarefas();
       },
-      error: (erro) => {
-        this.erro =
-          erro.error?.message ??
-          'Não foi possível excluir a tarefa.';
+      error: (erro: HttpErrorResponse) => {
+        this.erro = erro.error?.mensagem ?? 'Não foi possível excluir a tarefa.';
       }
     });
+  }
+
+  sair(): void {
+    localStorage.removeItem('usuarioLogado');
+    this.router.navigate(['/login']);
   }
 }

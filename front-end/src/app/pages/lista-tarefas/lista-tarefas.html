@@ -1,6 +1,11 @@
-
 <div class="container">
-  <h1>Minhas tarefas</h1>
+  <header class="cabecalho-tarefas">
+    <div>
+      <h1>Minhas tarefas</h1>
+      <p *ngIf="nomeUsuario">Olá, {{ nomeUsuario }}!</p>
+    </div>
+    <button type="button" class="secundario" (click)="sair()">Sair</button>
+  </header>
 
   <p class="sucesso" *ngIf="mensagem">{{ mensagem }}</p>
   <p class="erro" *ngIf="erro">{{ erro }}</p>

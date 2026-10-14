@@ -1,0 +1,38 @@
+<main class="auth-container">
+  <section class="auth-card">
+    <h1>Entrar</h1>
+    <p>Acesse sua conta para gerenciar suas tarefas.</p>
+
+    <p class="erro" *ngIf="erro">{{ erro }}</p>
+
+    <form (ngSubmit)="entrar()" #form="ngForm">
+      <label for="email">E-mail</label>
+      <input
+        id="email"
+        name="email"
+        type="email"
+        [(ngModel)]="email"
+        required
+        email
+        autocomplete="email"
+      />
+
+      <label for="senha">Senha</label>
+      <input
+        id="senha"
+        name="senha"
+        type="password"
+        [(ngModel)]="senha"
+        required
+        autocomplete="current-password"
+      />
+
+      <button type="submit" [disabled]="form.invalid || carregando">
+        {{ carregando ? 'Entrando...' : 'Entrar' }}
+      </button>
+    </form>
+
+    <p>Ainda não tem uma conta? <a routerLink="/cadastro">Cadastre-se</a></p>
+  </section>
+</main>
+

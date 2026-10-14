@@ -4,6 +4,8 @@ using back_end.Repositories;
 using back_end.Repositories.Interfaces;
 using back_end.Services;
 using back_end.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
+using back_end.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +14,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler =
+            System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
 builder.Services.AddScoped<ITarefaService, TarefaService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddDbContext<ApplicationDbContext>(
@@ -40,6 +47,9 @@ builder.Services.AddCors(options =>
         }
     );
 });
+builder.Services.AddScoped<
+    IPasswordHasher<Usuario>,
+    PasswordHasher<Usuario>>();
 
 var app = builder.Build();
 
