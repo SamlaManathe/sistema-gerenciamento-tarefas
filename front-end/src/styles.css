@@ -1,1 +1,153 @@
-/* You can add global styles to this file, and also import other style files */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --cor-primaria: #6d4aff;
+  --cor-primaria-hover: #5836e8;
+  --cor-fundo: #f6f5fb;
+  --cor-superficie: #ffffff;
+  --cor-texto: #25223a;
+  --cor-texto-secundario: #77748c;
+  --cor-borda: #e7e4f0;
+  --cor-sucesso: #16865b;
+  --cor-erro: #c9364f;
+  --cor-perigo: #d9435b;
+  --sombra-card: 0 12px 35px rgba(41, 28, 87, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  background: var(--cor-fundo);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  color: var(--cor-texto);
+  background:
+    radial-gradient(circle at 10% 5%, #eee9ff 0, transparent 30%),
+    var(--cor-fundo);
+  line-height: 1.6;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  font-size: clamp(1.7rem, 4vw, 2.2rem);
+  line-height: 1.2;
+  letter-spacing: -0.04em;
+}
+
+h2 {
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
+}
+
+p {
+  color: var(--cor-texto-secundario);
+}
+
+a {
+  color: var(--cor-primaria);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--cor-primaria-hover);
+  text-decoration: underline;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button {
+  border: 0;
+  border-radius: 10px;
+  padding: 11px 17px;
+  background: var(--cor-primaria);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+button:hover:not(:disabled) {
+  background: var(--cor-primaria-hover);
+  transform: translateY(-1px);
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+input,
+textarea {
+  width: 100%;
+  border: 1px solid var(--cor-borda);
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: var(--cor-texto);
+  background: #fff;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input:focus,
+textarea:focus {
+  border-color: var(--cor-primaria);
+  box-shadow: 0 0 0 3px rgba(109, 74, 255, 0.13);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #aaa6bb;
+}
+
+label {
+  display: block;
+  margin-bottom: -5px;
+  color: var(--cor-texto);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.erro {
+  color: var(--cor-erro);
+}
+
+.sucesso {
+  color: var(--cor-sucesso);
+}
+
+.secundario {
+  background: #ece9f5;
+  color: #51496b;
+}
+
+.secundario:hover:not(:disabled) {
+  background: #ded8ef;
+}
+
+.perigo {
+  background: #fff0f2;
+  color: var(--cor-perigo);
+}
+
+.perigo:hover:not(:disabled) {
+  background: #ffe0e5;
+}
